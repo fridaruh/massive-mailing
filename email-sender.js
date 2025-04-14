@@ -7,14 +7,14 @@ const csv = require('csv-parser');
 const transporter = nodemailer.createTransport({
   service: 'gmail', // O cualquier otro servicio que uses
   auth: {
-    user: 'aithenewsexy@gmail.com',
-    pass: 'csmjjowpdvuedfby' // Usa una clave de aplicación para Gmail
+    user: 'tu_mail@gmail.com',
+    pass: 'tu_password' // Usa una clave de aplicación para Gmail
   }
 });
 
 // Configuración del correo
 const mailOptions = {
-  from: 'aithenewsexy@gmail.com',
+  from: 'tu_mail@gmail.com',
   subject: 'Sé que estás sintiendo el FOMO 🙊',
   html: `
     <!DOCTYPE html>
