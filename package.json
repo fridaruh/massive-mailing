@@ -1,0 +1,16 @@
+{
+  "name": "masive-mailing",
+  "version": "1.0.0",
+  "description": "## Descripción Esta herramienta permite enviar correos electrónicos masivos de manera controlada y profesional, especialmente diseñada para campañas de marketing. Incluye características como envío por lotes, delays entre envíos y manejo de errores.",
+  "main": "email-sender.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.2.0",
+    "nodemailer": "^7.0.5"
+  }
+}
