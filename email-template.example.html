@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{SUBJECT}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px 25px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .message {
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+        
+        .highlight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .highlight-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background-color: #f8f9fa;
+            padding: 25px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .footer p {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .social-links {
+            margin-top: 15px;
+        }
+        
+        .social-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .header, .content, .footer {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .cta-button {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{TITLE}}</h1>
+            <div class="subtitle">{{SUBTITLE}}</div>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                ¡Hola {{FIRST_NAME}}!
+            </div>
+            
+            <div class="message">
+                {{MAIN_MESSAGE}}
+            </div>
+            
+            <div class="highlight-box">
+                <h3>{{HIGHLIGHT_TITLE}}</h3>
+                <p>{{HIGHLIGHT_MESSAGE}}</p>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{CTA_LINK}}" class="cta-button">{{CTA_TEXT}}</a>
+            </div>
+            
+            <div class="message">
+                {{CLOSING_MESSAGE}}
+            </div>
+            
+            <div class="message">
+                ¡Saludos!<br>
+                {{SENDER_NAME}}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>{{COMPANY_NAME}}</p>
+            <p>{{COMPANY_ADDRESS}}</p>
+            <p>
+                Si no deseas recibir más correos, 
+                <a href="{{UNSUBSCRIBE_LINK}}" style="color: #667eea;">haz clic aquí para darte de baja</a>
+            </p>
+            
+            <div class="social-links">
+                <a href="{{WEBSITE_LINK}}">Sitio Web</a>
+                <a href="{{FACEBOOK_LINK}}">Facebook</a>
+                <a href="{{TWITTER_LINK}}">Twitter</a>
+                <a href="{{INSTAGRAM_LINK}}">Instagram</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
