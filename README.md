@@ -69,10 +69,38 @@ Modifica `email-template.html` para cambiar el contenido, estilos y estructura d
 ## 📧 Uso
 
 ### Enviar correos
+npm install nodemailer csv-parser
+```
+
+3. Configura las variables de entorno o modifica directamente el archivo `email-sender.js`:
+   - Correo electrónico
+   - Contraseña/Clave de aplicación
+
+## Estructura del CSV
+El archivo `destinatarios.csv` debe tener la siguiente estructura:
+``` csv
+email,nombre
+usuario1@ejemplo.com,Nombre 1
+usuario2@ejemplo.com,Nombre 2
+...
+```
+
+## Configuración
+Los principales parámetros configurables son:
+- `delayBetweenEmails`: 10 segundos entre cada correo
+- `batchSize`: 50 correos por lote
+- `delayBetweenBatches`: 1 minuto entre lotes
+
+## Uso
+1. Prepara tu archivo CSV con los destinatarios
+2. Ejecuta el script:
+
+>>>>>>> 492ed2a5fe22e4246f34d39e3e1129e51b6e0746
 ```bash
 node email-sender.js
 ```
 
+<<<<<<< HEAD
 ### Configuración de envío
 El script incluye configuraciones para controlar la velocidad del envío:
 - **Delay entre correos**: 10 segundos
@@ -126,5 +154,26 @@ Si tienes problemas:
 2. Confirma que las credenciales en `config.js` son correctas
 3. Asegúrate de que `destinatarios.csv` tiene el formato correcto
 4. Revisa la consola para mensajes de error detallados
+=======
+4. El script enviará los correos en lotes, con un delay entre cada lote.
+## Monitoreo
+El script proporciona información en tiempo real sobre:
+- Progreso del envío
+- Cantidad de correos enviados
+- Errores encontrados
+- Estadísticas finales
+
+## Consideraciones de Seguridad
+- Utiliza claves de aplicación en lugar de contraseñas de cuenta
+- Respeta las políticas de spam y límites de envío del proveedor de correo
+- Incluye opción de desuscripción en los correos
+
+## Limitaciones
+- Gmail tiene un límite de 500 correos por día para cuentas regulares
+- Se recomienda dividir el CSV en lotes más pequeños para evitar bloqueos
+
+## Contribuciones
+Las contribuciones son bienvenidas. Por favor, abre un issue primero para discutir los cambios propuestos.
+>>>>>>> 492ed2a5fe22e4246f34d39e3e1129e51b6e0746
 
 
