@@ -53,7 +53,7 @@ app.post('/api/send', upload.fields([
         const htmlTemplate = fs.readFileSync(templateFile.path, 'utf8');
 
         // Configure nodemailer
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: emailUser,
@@ -156,6 +156,61 @@ function isValidEmail(email) {
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// Send single email endpoint
+app.post('/api/send-single', async (req, res) => {
+    try {
+        const { to, htmlContent, subject, gmailUser, gmailPassword } = req.body;
+        
+        // Validate required fields
+        if (!to || !htmlContent || !subject || !gmailUser || !gmailPassword) {
+            return res.status(400).json({ error: 'Faltan campos requeridos' });
+        }
+        
+        // Validate email format
+        if (!isValidEmail(to)) {
+            return res.status(400).json({ error: 'Formato de email inválido' });
+        }
+        
+        // Create transporter with provided credentials
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: gmailUser,
+                pass: gmailPassword
+            }
+        });
+        
+        // Send email
+        const info = await transporter.sendMail({
+            from: gmailUser,
+            to: to,
+            subject: subject,
+            html: htmlContent
+        });
+        
+        console.log(`Email sent successfully to: ${to}, Message ID: ${info.messageId}`);
+        
+        res.json({ 
+            success: true, 
+            messageId: info.messageId,
+            to: to,
+            subject: subject
+        });
+        
+    } catch (error) {
+        console.error('Error sending single email:', error);
+        
+        // Handle specific Gmail errors
+        if (error.code === 'EAUTH') {
+            res.status(401).json({ error: 'Credenciales de Gmail inválidas. Verifica tu correo y clave de aplicación.' });
+        } else if (error.code === 'ECONNECTION') {
+            res.status(503).json({ error: 'Error de conexión con Gmail. Verifica tu conexión a internet.' });
+        } else {
+            res.status(500).json({ error: `Error al enviar correo: ${error.message}` });
+        }
+    }
+});
 
 // Main sending process
 async function startSendingProcess() {

@@ -1,29 +1,18 @@
 class EmailSender {
     constructor() {
-        this.recipients = [];
-        this.htmlTemplate = '';
-        this.isRunning = false;
-        this.currentIndex = 0;
-        this.successCount = 0;
-        this.errorCount = 0;
-        
         this.initializeElements();
         this.bindEvents();
-        this.updateUI();
+        this.initializeState();
     }
-    
+
     initializeElements() {
-        // Form elements
-        this.emailUser = document.getElementById('emailUser');
-        this.appPassword = document.getElementById('appPassword');
-        this.batchSize = document.getElementById('batchSize');
-        this.delayEmails = document.getElementById('delayEmails');
-        this.delayBatches = document.getElementById('delayBatches');
-        this.emailSubject = document.getElementById('emailSubject');
-        
         // File upload elements
         this.templateUpload = document.getElementById('templateUpload');
         this.templateFile = document.getElementById('templateFile');
+        this.templatePreview = document.getElementById('templatePreview');
+        this.templateName = document.getElementById('templateName');
+        this.removeTemplate = document.getElementById('removeTemplate');
+        
         this.csvUpload = document.getElementById('csvUpload');
         this.csvFile = document.getElementById('csvFile');
         this.csvPreview = document.getElementById('csvPreview');
@@ -42,9 +31,9 @@ class EmailSender {
         
         // Progress elements
         this.progressSection = document.getElementById('progressSection');
-        this.sentCount = document.getElementById('sentCount');
-        this.errorCount = document.getElementById('errorCount');
-        this.remainingCount = document.getElementById('remainingCount');
+        this.sentCountElement = document.getElementById('sentCount');
+        this.errorCountElement = document.getElementById('errorCount');
+        this.remainingCountElement = document.getElementById('remainingCount');
         this.progressFill = document.getElementById('progressFill');
         this.progressPercent = document.getElementById('progressPercent');
         this.progressStatus = document.getElementById('progressStatus');
@@ -69,119 +58,141 @@ class EmailSender {
         this.settingsModalTitle = document.getElementById('settingsModalTitle');
         this.settingsModalContent = document.getElementById('settingsModalContent');
         this.closeSettings = document.getElementById('closeSettings');
+        
+        // Configuration elements - using fixed values
+        this.batchSize = { value: 50 }; // Fixed batch size
+        this.delayEmails = { value: 10 }; // Fixed delay between emails (seconds)
+        this.delayBatches = { value: 1 }; // Fixed delay between batches (minutes)
     }
     
     bindEvents() {
         // File upload events
-        this.templateUpload.addEventListener('click', () => this.templateFile.click());
-        this.templateFile.addEventListener('change', (e) => this.handleTemplateUpload(e));
-        this.removeTemplate.addEventListener('click', () => this.removeTemplateFile());
+        if (this.templateUpload && this.templateFile) {
+            this.templateUpload.addEventListener('click', () => this.templateFile.click());
+            this.templateFile.addEventListener('change', (e) => this.handleTemplateUpload(e));
+        }
         
-        this.csvUpload.addEventListener('click', () => this.csvFile.click());
-        this.csvFile.addEventListener('change', (e) => this.handleCsvUpload(e));
-        this.removeCsv.addEventListener('click', () => this.removeCsvFile());
+        if (this.removeTemplate) {
+            this.removeTemplate.addEventListener('click', () => this.removeTemplateFile());
+        }
+        
+        if (this.csvUpload && this.csvFile) {
+            this.csvUpload.addEventListener('click', () => this.csvFile.click());
+            this.csvFile.addEventListener('change', (e) => this.handleCsvUpload(e));
+        }
+        
+        if (this.removeCsv) {
+            this.removeCsv.addEventListener('click', () => this.removeCsvFile());
+        }
         
         // Drag and drop events
-        this.setupDragAndDrop(this.templateUpload, this.templateFile);
-        this.setupDragAndDrop(this.csvUpload, this.csvFile);
+        if (this.templateUpload && this.templateFile) {
+            this.setupDragAndDrop(this.templateUpload, this.templateFile);
+        }
+        if (this.csvUpload && this.csvFile) {
+            this.setupDragAndDrop(this.csvUpload, this.csvFile);
+        }
         
-        // Form change events
-        [this.batchSize, this.delayEmails, this.delayBatches].forEach(input => {
-            input.addEventListener('input', () => this.updateEstimates());
-        });
+
         
         // Control events
-        this.startSending.addEventListener('click', () => this.startSendingProcess());
-        this.stopSending.addEventListener('click', () => this.stopSendingProcess());
-        this.clearLog.addEventListener('click', () => this.clearLogContent());
+        if (this.startSending) {
+            this.startSending.addEventListener('click', () => this.startSendingProcess());
+        }
+        if (this.stopSending) {
+            this.stopSending.addEventListener('click', () => this.stopSendingProcess());
+        }
+        if (this.clearLog) {
+            this.clearLog.addEventListener('click', () => this.clearLogContent());
+        }
         
         // Modal events
-        this.closeHelp.addEventListener('click', () => this.hideHelpModal());
-        this.helpModal.addEventListener('click', (e) => {
-            if (e.target === this.helpModal) this.hideHelpModal();
-        });
-        
-        // Settings events
-        this.settingsButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggleSettingsDropdown();
-        });
-        
-        this.gmailCredentialsOption.addEventListener('click', () => {
-            this.showGmailCredentialsModal();
-        });
-        
-        this.sendConfigOption.addEventListener('click', () => {
-            this.showSendConfigModal();
-        });
-        
-        this.closeSettings.addEventListener('click', () => this.hideSettingsModal());
-        this.settingsModal.addEventListener('click', (e) => {
-            if (e.target === this.settingsModal) this.hideSettingsModal();
-        });
-        
-        // Close dropdown when clicking outside
-        const buttons = [
-            { id: 'startSending', handler: this.startSending.bind(this) },
-            { id: 'stopSending', handler: this.stopSending.bind(this) },
-            { id: 'clearLog', handler: this.clearLog.bind(this) },
-            { id: 'removeTemplate', handler: this.removeTemplate.bind(this) },
-            { id: 'removeCsv', handler: this.removeCsv.bind(this) }
-        ];
-
-        buttons.forEach(({ id, handler }) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', handler);
-            }
-        });
-    }
-    setupDragAndDrop(uploadArea, fileInput) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        }
-        )
-        const settingsElements = [
-            { id: 'settingsButton', handler: this.toggleSettingsDropdown.bind(this) },
-            { id: 'gmailCredentialsOption', handler: () => this.openSettingsModal('gmail') },
-            { id: 'sendConfigOption', handler: () => this.openSettingsModal('sendConfig') },
-            { id: 'closeSettings', handler: this.closeSettingsModal.bind(this) }
-        ];
-
-        settingsElements.forEach(({ id, handler }) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', handler);
-            }
-        }
-        )
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
-        });
-        const settingsModal = document.getElementById('settingsModal');
-        if (settingsModal) {
-            settingsModal.addEventListener('click', (e) => {
-                if (e.target.id === 'settingsModal') {
-                    this.closeSettingsModal();
-                }
+        if (this.closeHelp && this.helpModal) {
+            this.closeHelp.addEventListener('click', () => this.hideHelpModal());
+            this.helpModal.addEventListener('click', (e) => {
+                if (e.target === this.helpModal) this.hideHelpModal();
             });
         }
-
         
-        uploadArea.addEventListener('drop', (e) => {
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-            }
-            if (settingsMenu && dropdown && !settingsMenu.contains(e.target)) {
-                fileInput.dispatchEvent(new Event('change'));
+        // Settings events
+        if (this.settingsButton) {
+            this.settingsButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleSettingsDropdown();
+            });
+        }
+        
+        if (this.gmailCredentialsOption) {
+            this.gmailCredentialsOption.addEventListener('click', () => {
+                this.showGmailCredentialsModal();
+            });
+        }
+        
+        if (this.sendConfigOption) {
+            this.sendConfigOption.addEventListener('click', () => {
+                this.showSendConfigModal();
+            });
+        }
+        
+        if (this.closeSettings && this.settingsModal) {
+            this.closeSettings.addEventListener('click', () => this.hideSettingsModal());
+            this.settingsModal.addEventListener('click', (e) => {
+                if (e.target === this.settingsModal) this.hideSettingsModal();
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (this.settingsDropdown && !this.settingsButton?.contains(e.target)) {
+                this.settingsDropdown.classList.remove('show');
             }
         });
     }
-    
-    preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
+
+    setupDragAndDrop(uploadArea, fileInput) {
+        if (!uploadArea || !fileInput) return;
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('dragover');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('dragover');
+            }, false);
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        }, false);
     }
-    
+
+    initializeState() {
+        this.htmlTemplate = '';
+        this.recipients = [];
+        this.isSending = false;
+        this.sentCount = 0;
+        this.errorCount = 0;
+        this.gmailCredentials = null;
+        this.loadGmailCredentials();
+        this.updateUI();
+    }
+
     handleTemplateUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -194,9 +205,9 @@ class EmailSender {
         const reader = new FileReader();
         reader.onload = (e) => {
             this.htmlTemplate = e.target.result;
-            this.templateName.textContent = file.name;
-            this.templateUpload.style.display = 'none';
-            this.templatePreview.style.display = 'block';
+            if (this.templateName) this.templateName.textContent = file.name;
+            if (this.templateUpload) this.templateUpload.style.display = 'none';
+            if (this.templatePreview) this.templatePreview.style.display = 'block';
             this.updateUI();
         };
         reader.readAsText(file);
@@ -204,9 +215,9 @@ class EmailSender {
     
     removeTemplateFile() {
         this.htmlTemplate = '';
-        this.templateFile.value = '';
-        this.templateUpload.style.display = 'block';
-        this.templatePreview.style.display = 'none';
+        if (this.templateFile) this.templateFile.value = '';
+        if (this.templateUpload) this.templateUpload.style.display = 'block';
+        if (this.templatePreview) this.templatePreview.style.display = 'none';
         this.updateUI();
     }
     
@@ -222,9 +233,9 @@ class EmailSender {
         const reader = new FileReader();
         reader.onload = (e) => {
             this.parseCsvData(e.target.result);
-            this.csvName.textContent = file.name;
-            this.csvUpload.style.display = 'none';
-            this.csvPreview.style.display = 'block';
+            if (this.csvName) this.csvName.textContent = file.name;
+            if (this.csvUpload) this.csvUpload.style.display = 'none';
+            if (this.csvPreview) this.csvPreview.style.display = 'block';
             this.updateUI();
         };
         reader.readAsText(file);
@@ -249,333 +260,392 @@ class EmailSender {
             }
         }
         
-        this.emailCount.textContent = `${this.recipients.length} emails`;
+        if (this.emailCount) this.emailCount.textContent = `${this.recipients.length} emails`;
         this.updateEstimates();
     }
     
     removeCsvFile() {
         this.recipients = [];
-        this.csvFile.value = '';
-        this.csvUpload.style.display = 'block';
-        this.csvPreview.style.display = 'none';
+        if (this.csvFile) this.csvFile.value = '';
+        if (this.csvUpload) this.csvUpload.style.display = 'block';
+        if (this.csvPreview) this.csvPreview.style.display = 'none';
         this.updateUI();
     }
-    
+
     isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
-    
+
     updateEstimates() {
-        const recipientCount = this.recipients.length;
-        const batchSize = parseInt(this.batchSize.value) || 50;
-        const delayEmails = parseInt(this.delayEmails.value) || 10;
-        const delayBatches = parseInt(this.delayBatches.value) || 1;
-        
-        this.totalRecipients.textContent = recipientCount;
-        
-        if (recipientCount > 0) {
-            const batches = Math.ceil(recipientCount / batchSize);
-            this.estimatedBatches.textContent = batches;
-            
-            // Calculate estimated time
-            const emailTime = recipientCount * delayEmails; // seconds
-            const batchTime = (batches - 1) * delayBatches * 60; // seconds
-            const totalSeconds = emailTime + batchTime;
-            const minutes = Math.ceil(totalSeconds / 60);
-            
-            this.estimatedTime.textContent = `${minutes} min`;
-        } else {
-            this.estimatedBatches.textContent = '0';
-            this.estimatedTime.textContent = '0 min';
-        }
-    }
-    
-    updateUI() {
-        const hasCredentials = this.emailUser.value && this.appPassword.value;
-        const hasTemplate = this.htmlTemplate.length > 0;
-        const hasRecipients = this.recipients.length > 0;
-        const hasSubject = this.emailSubject.value.trim().length > 0;
-        
-        const canStart = hasCredentials && hasTemplate && hasRecipients && hasSubject && !this.isRunning;
-        this.startSending.disabled = !canStart;
-        
-        // Update status
-        if (this.isRunning) {
-            this.statusIndicator.className = 'status-indicator sending';
-            this.statusText.textContent = 'Enviando...';
-        } else if (canStart) {
-            this.statusIndicator.className = 'status-indicator';
-            this.statusText.textContent = 'Listo';
-        } else {
-            this.statusIndicator.className = 'status-indicator';
-            this.statusText.textContent = 'Configurando...';
-        }
-    }
-    
-    async startSendingProcess() {
-        if (!this.validateConfiguration()) return;
-        
-        this.isRunning = true;
-        this.currentIndex = 0;
-        this.successCount = 0;
-        this.errorCount = 0;
-        
-        this.startSending.style.display = 'none';
-        this.stopSending.style.display = 'inline-flex';
-        this.progressSection.style.display = 'block';
-        
-        this.updateProgress();
-        this.updateUI();
-        
-        this.addLogEntry('info', 'Iniciando proceso de envío masivo...');
-        
-        // Simulate sending process
-        await this.simulateSendingProcess();
-    }
-    
-    stopSendingProcess() {
-        this.isRunning = false;
-        this.startSending.style.display = 'inline-flex';
-        this.stopSending.style.display = 'none';
-        
-        this.addLogEntry('info', 'Proceso detenido por el usuario');
-        this.updateUI();
-    }
-    
-    async simulateSendingProcess() {
-        const batchSize = parseInt(this.batchSize.value) || 50;
-        const delayEmails = parseInt(this.delayEmails.value) * 1000 || 10000;
-        const delayBatches = parseInt(this.delayBatches.value) * 60000 || 60000;
-        
-        for (let i = 0; i < this.recipients.length && this.isRunning; i++) {
-            // Batch delay
-            if (i > 0 && i % batchSize === 0) {
-                this.addLogEntry('info', `Pausa entre lotes (${i}/${this.recipients.length})...`);
-                this.progressStatus.textContent = 'Pausa entre lotes...';
-                await this.delay(delayBatches);
-            }
-            
-            if (!this.isRunning) break;
-            
-            const email = this.recipients[i];
-            this.currentIndex = i;
-            
-            // Simulate sending
-            this.progressStatus.textContent = `Enviando a ${email}...`;
-            
-            // Simulate success/failure (90% success rate)
-            const success = Math.random() > 0.1;
-            
-            if (success) {
-                this.successCount++;
-                this.addLogEntry('success', `Correo enviado exitosamente a: ${email}`);
-            } else {
-                this.errorCount++;
-                this.addLogEntry('error', `Error al enviar a ${email}: Simulación de error`);
-            }
-            
-            this.updateProgress();
-            
-            // Delay between emails
-            if (i < this.recipients.length - 1) {
-                await this.delay(delayEmails);
-            }
-        }
-        
-        if (this.isRunning) {
-            this.completeProcess();
-        }
-    }
-    
-    completeProcess() {
-        this.isRunning = false;
-        this.startSending.style.display = 'inline-flex';
-        this.stopSending.style.display = 'none';
-        
-        this.progressStatus.textContent = 'Proceso completado';
-        this.addLogEntry('info', `Envío completado. Éxitos: ${this.successCount}, Errores: ${this.errorCount}`);
-        
-        this.updateUI();
-    }
-    
-    updateProgress() {
-        const total = this.recipients.length;
-        const processed = this.currentIndex + 1;
-        const remaining = total - processed;
-        const percentage = Math.round((processed / total) * 100);
-        
-        this.sentCount.textContent = this.successCount;
-        this.errorCount.textContent = this.errorCount;
-        this.remainingCount.textContent = remaining;
-        
-        this.progressFill.style.width = `${percentage}%`;
-        this.progressPercent.textContent = `${percentage}%`;
-    }
-    
-    addLogEntry(type, message) {
-        const timestamp = new Date().toLocaleTimeString();
-        const entry = document.createElement('div');
-        entry.className = `log-entry ${type}`;
-        entry.innerHTML = `
-            <div class="log-timestamp">${timestamp}</div>
-            <div>${message}</div>
-        `;
-        
-        this.logContent.appendChild(entry);
-        this.logContent.scrollTop = this.logContent.scrollHeight;
-    }
-    
-    clearLogContent() {
-        this.logContent.innerHTML = '';
-    }
-    
-    validateConfiguration() {
-        if (!this.emailUser.value) {
-            this.showError('Por favor ingresa tu correo electrónico');
-            return false;
-        }
-        
-        if (!this.appPassword.value) {
-            this.showError('Por favor ingresa tu clave de aplicación');
-            return false;
-        }
-        
-        if (!this.htmlTemplate) {
-            this.showError('Por favor carga una plantilla HTML');
-            return false;
-        }
+        // Using fixed configuration values
+        const batchSize = 50; // Fixed batch size
+        const delayEmails = 10; // Fixed delay between emails (seconds)
+        const delayBatches = 1; // Fixed delay between batches (minutes)
         
         if (this.recipients.length === 0) {
-            this.showError('Por favor carga una lista de destinatarios');
-            return false;
+            if (this.totalRecipients) this.totalRecipients.textContent = '0';
+            if (this.estimatedBatches) this.estimatedBatches.textContent = '0';
+            if (this.estimatedTime) this.estimatedTime.textContent = '0 min';
+            return;
         }
         
-        if (!this.emailSubject.value.trim()) {
-            this.showError('Por favor ingresa un asunto para el correo');
-            return false;
+        const totalRecipients = this.recipients.length;
+        const estimatedBatches = Math.ceil(totalRecipients / batchSize);
+        const estimatedTime = Math.ceil((totalRecipients * delayEmails + (estimatedBatches - 1) * delayBatches * 60) / 60);
+        
+        if (this.totalRecipients) this.totalRecipients.textContent = totalRecipients;
+        if (this.estimatedBatches) this.estimatedBatches.textContent = estimatedBatches;
+        if (this.estimatedTime) this.estimatedTime.textContent = `${estimatedTime} min`;
+        
+        this.updateUI();
+    }
+
+    updateUI() {
+        const hasTemplate = this.htmlTemplate.length > 0;
+        const hasRecipients = this.recipients.length > 0;
+        const hasCredentials = this.gmailCredentials !== null;
+        const canSend = hasTemplate && hasRecipients && hasCredentials && !this.isSending;
+        
+        if (this.startSending) {
+            this.startSending.disabled = !canSend;
         }
         
-        return true;
-    }
-    
-    showError(message) {
-        // Simple error display - in a real app you'd want a proper notification system
-        alert(message);
-    }
-    
-    showHelpModal() {
-        this.helpModal.style.display = 'flex';
-    }
-    
-    hideHelpModal() {
-        this.helpModal.style.display = 'none';
-    }
-    
-    toggleSettingsDropdown() {
-        this.settingsDropdown.classList.toggle('show');
-    }
-    
-    hideSettingsDropdown() {
-        this.settingsDropdown.classList.remove('show');
-    }
-    
-    showGmailCredentialsModal() {
-        this.hideSettingsDropdown();
-        this.settingsModalTitle.textContent = 'Credenciales de Gmail';
-        this.settingsModalContent.innerHTML = `
-            <div class="form-group">
-                <label for="modalEmailUser">Correo electrónico</label>
-                <input type="email" id="modalEmailUser" placeholder="tu-email@gmail.com" value="${this.emailUser.value}">
-            </div>
-            <div class="form-group">
-                <label for="modalAppPassword">Clave de aplicación</label>
-                <input type="password" id="modalAppPassword" placeholder="Clave de aplicación de Gmail" value="${this.appPassword.value}">
-            </div>
-            <div class="help-text">
-                <a href="#" id="modalHelpLink">¿Cómo obtener una clave de aplicación?</a>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" id="cancelGmailSettings">Cancelar</button>
-                <button class="btn-primary" id="saveGmailSettings">Guardar</button>
-            </div>
-        `;
+        if (this.stopSending) {
+            this.stopSending.style.display = this.isSending ? 'flex' : 'none';
+        }
         
-        // Bind events for modal form
-        document.getElementById('modalHelpLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            this.hideSettingsModal();
-            this.showHelpModal();
-        });
+        if (this.progressSection) {
+            this.progressSection.style.display = this.isSending ? 'block' : 'none';
+        }
         
-        document.getElementById('cancelGmailSettings').addEventListener('click', () => {
-            this.hideSettingsModal();
-        });
-        
-        document.getElementById('saveGmailSettings').addEventListener('click', () => {
-            this.emailUser.value = document.getElementById('modalEmailUser').value;
-            this.appPassword.value = document.getElementById('modalAppPassword').value;
-            this.hideSettingsModal();
-            this.updateUI();
-        });
-        
-        this.settingsModal.style.display = 'flex';
-    }
-    
-    showSendConfigModal() {
-        this.hideSettingsDropdown();
-        this.settingsModalTitle.textContent = 'Configuración de Envío';
-        this.settingsModalContent.innerHTML = `
-            <div class="form-group">
-                <label for="modalBatchSize">Correos por lote</label>
-                <input type="number" id="modalBatchSize" value="${this.batchSize.value}" min="1" max="100">
-            </div>
-            <div class="form-group">
-                <label for="modalDelayEmails">Delay entre correos (segundos)</label>
-                <input type="number" id="modalDelayEmails" value="${this.delayEmails.value}" min="1" max="60">
-            </div>
-            <div class="form-group">
-                <label for="modalDelayBatches">Delay entre lotes (minutos)</label>
-                <input type="number" id="modalDelayBatches" value="${this.delayBatches.value}" min="1" max="10">
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" id="cancelSendSettings">Cancelar</button>
-                <button class="btn-primary" id="saveSendSettings">Guardar</button>
-            </div>
-        `;
-        
-        // Bind events for modal form
-        document.getElementById('cancelSendSettings').addEventListener('click', () => {
-            this.hideSettingsModal();
-        });
-        
-        document.getElementById('saveSendSettings').addEventListener('click', () => {
-            this.batchSize.value = document.getElementById('modalBatchSize').value;
-            this.delayEmails.value = document.getElementById('modalDelayEmails').value;
-            this.delayBatches.value = document.getElementById('modalDelayBatches').value;
-            this.hideSettingsModal();
-            this.updateEstimates();
-        });
-        
-        this.settingsModal.style.display = 'flex';
-    }
-    
-    hideSettingsModal() {
-        this.settingsModal.style.display = 'none';
-    }
-    
-    delay(ms) {
-        ['emailSubject'].forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('input', this.updateSendSummary.bind(this));
+        // Actualizar estado de credenciales
+        if (this.statusText) {
+            if (this.isSending) {
+                this.statusText.textContent = 'Enviando...';
+            } else if (canSend) {
+                this.statusText.textContent = 'Listo para enviar';
+            } else if (!hasCredentials) {
+                this.statusText.textContent = 'Configurar Gmail';
+            } else if (!hasTemplate) {
+                this.statusText.textContent = 'Cargar plantilla';
+            } else if (!hasRecipients) {
+                this.statusText.textContent = 'Cargar destinatarios';
+            } else {
+                this.statusText.textContent = 'Listo';
             }
         }
-        )
+    }
+
+    showError(message) {
+        console.error(message);
+        // Aquí podrías implementar una notificación visual
+        alert(message);
+    }
+
+    startSendingProcess() {
+        if (!this.htmlTemplate || this.recipients.length === 0) {
+            this.showError('Por favor carga una plantilla HTML y un archivo CSV antes de continuar');
+            return;
+        }
+        
+        // Verificar credenciales de Gmail
+        const credentials = this.getGmailCredentials();
+        if (!credentials) {
+            return;
+        }
+        
+        this.isSending = true;
+        this.sentCount = 0;
+        this.errorCount = 0;
+        this.updateUI();
+        
+        // Log de inicio con credenciales
+        this.logMessage('Iniciando proceso de envío real...');
+        this.logMessage(`Usando cuenta: ${credentials.user}`);
+        this.logMessage(`Total de destinatarios: ${this.recipients.length}`);
+        
+        // Envío real usando la API del servidor
+        this.sendRealEmails(credentials);
+    }
+
+    stopSendingProcess() {
+        this.isSending = false;
+        this.logMessage('Proceso de envío detenido por el usuario');
+        this.updateUI();
+    }
+
+    sendRealEmails(credentials) {
+        let currentIndex = 0;
+        const batchSize = 50; // Fixed batch size
+        const delayEmails = 10; // Fixed delay between emails (seconds)
+        const delayBatches = 1; // Fixed delay between batches (minutes)
+        
+        const sendBatch = async () => {
+            if (!this.isSending || currentIndex >= this.recipients.length) {
+                this.isSending = false;
+                this.logMessage('Proceso de envío completado');
+                this.updateUI();
+                return;
+            }
+            
+            const endIndex = Math.min(currentIndex + batchSize, this.recipients.length);
+            const batch = this.recipients.slice(currentIndex, endIndex);
+            
+            this.logMessage(`Enviando lote ${Math.floor(currentIndex / batchSize) + 1}: ${batch.length} correos`);
+            
+            // Enviar cada correo del lote
+            for (let i = 0; i < batch.length && this.isSending; i++) {
+                const email = batch[i];
+                
+                try {
+                    await this.sendSingleEmail(email, credentials);
+                    this.sentCount++;
+                    this.logMessage(`✓ Enviado a: ${email}`);
+                    this.updateProgress();
+                } catch (error) {
+                    this.errorCount++;
+                    this.logMessage(`✗ Error enviando a ${email}: ${error.message}`);
+                    this.updateProgress();
+                }
+                
+                // Delay entre correos (excepto el último del lote)
+                if (i < batch.length - 1 && this.isSending) {
+                    await this.delay(delayEmails * 1000);
+                }
+            }
+            
+            currentIndex = endIndex;
+            
+            // Programar siguiente lote
+            if (this.isSending && currentIndex < this.recipients.length) {
+                this.logMessage(`Pausa entre lotes (${delayBatches} minuto(s))...`);
+                setTimeout(sendBatch, delayBatches * 60 * 1000);
+            }
+        };
+        
+        sendBatch();
+    }
+
+    async sendSingleEmail(email, credentials) {
+        try {
+            const response = await fetch('/api/send-single', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to: email,
+                    htmlContent: this.htmlTemplate,
+                    subject: document.getElementById('emailSubject')?.value || 'Correo enviado desde Masive Mailing',
+                    gmailUser: credentials.user,
+                    gmailPassword: credentials.password
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error en el servidor');
+            }
+            
+            const result = await response.json();
+            return result;
+            
+        } catch (error) {
+            throw new Error(`Error de red: ${error.message}`);
+        }
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    updateProgress() {
+        const total = this.recipients.length;
+        const sent = this.sentCount;
+        const percent = Math.round((sent / total) * 100);
+        
+        if (this.progressFill) this.progressFill.style.width = `${percent}%`;
+        if (this.progressPercent) this.progressPercent.textContent = `${percent}%`;
+        if (this.sentCountElement) this.sentCountElement.textContent = sent;
+        if (this.remainingCountElement) this.remainingCountElement.textContent = total - sent;
+        
+        if (this.progressStatus) {
+            if (percent === 100) {
+                this.progressStatus.textContent = 'Completado';
+            } else if (percent > 0) {
+                this.progressStatus.textContent = 'Enviando...';
+            }
+        }
+    }
+
+    logMessage(message) {
+        if (this.logContent) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `<span class="log-time">[${timestamp}]</span> ${message}`;
+            this.logContent.appendChild(logEntry);
+            this.logContent.scrollTop = this.logContent.scrollHeight;
+        }
+        console.log(message);
+    }
+
+    clearLogContent() {
+        if (this.logContent) {
+            this.logContent.innerHTML = '';
+        }
+    }
+
+    toggleSettingsDropdown() {
+        if (this.settingsDropdown) {
+            this.settingsDropdown.classList.toggle('show');
+        }
+    }
+
+    showGmailCredentialsModal() {
+        if (this.settingsModal && this.settingsModalTitle && this.settingsModalContent) {
+            this.settingsModalTitle.textContent = 'Credenciales de Gmail';
+            this.settingsModalContent.innerHTML = `
+                <div class="form-group">
+                    <label for="gmailUser">Correo de Gmail</label>
+                    <input type="email" id="gmailUser" placeholder="tu-email@gmail.com" value="${this.gmailCredentials?.user || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="gmailPassword">Clave de aplicación</label>
+                    <input type="password" id="gmailPassword" placeholder="Tu clave de aplicación" value="${this.gmailCredentials?.password || ''}">
+                    <small>No uses tu contraseña normal de Gmail</small>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="this.closest('.modal-overlay').style.display='none'">Cancelar</button>
+                    <button class="btn-primary" onclick="window.emailSender.saveGmailCredentials()">Guardar</button>
+                </div>
+            `;
+            this.settingsModal.style.display = 'flex';
+        }
+    }
+
+    showSendConfigModal() {
+        if (this.settingsModal && this.settingsModalTitle && this.settingsModalContent) {
+            this.settingsModalTitle.textContent = 'Configuración de Envío';
+            this.settingsModalContent.innerHTML = `
+                <div class="form-group">
+                    <label for="modalBatchSize">Tamaño del lote</label>
+                    <input type="number" id="modalBatchSize" value="${this.batchSize?.value || 50}" min="1" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="modalDelayEmails">Delay entre correos (segundos)</label>
+                    <input type="number" id="modalDelayEmails" value="${this.delayEmails?.value || 10}" min="1" max="60">
+                </div>
+                <div class="form-group">
+                    <label for="modalDelayBatches">Delay entre lotes (minutos)</label>
+                    <input type="number" id="modalDelayBatches" value="${this.delayBatches?.value || 1}" min="1" max="10">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="this.closest('.modal-overlay').style.display='none'">Cancelar</button>
+                    <button class="btn-primary" onclick="this.saveSendConfig()">Guardar</button>
+                </div>
+            `;
+            this.settingsModal.style.display = 'flex';
+        }
+    }
+
+    hideSettingsModal() {
+        if (this.settingsModal) {
+            this.settingsModal.style.display = 'none';
+        }
+    }
+
+    hideHelpModal() {
+        if (this.helpModal) {
+            this.helpModal.style.display = 'none';
+        }
+    }
+
+    loadGmailCredentials() {
+        try {
+            const saved = localStorage.getItem('gmailCredentials');
+            if (saved) {
+                this.gmailCredentials = JSON.parse(saved);
+                this.logMessage('Credenciales de Gmail cargadas desde almacenamiento local');
+            }
+        } catch (error) {
+            console.error('Error al cargar credenciales:', error);
+        }
+    }
+
+    saveGmailCredentials() {
+        const user = document.getElementById('gmailUser')?.value;
+        const password = document.getElementById('gmailPassword')?.value;
+        
+        if (!user || !password) {
+            this.showError('Por favor completa todos los campos');
+            return;
+        }
+        
+        if (!this.isValidEmail(user)) {
+            this.showError('Por favor ingresa un correo válido');
+            return;
+        }
+        
+        // Guardar credenciales
+        this.gmailCredentials = { user, password };
+        
+        try {
+            localStorage.setItem('gmailCredentials', JSON.stringify(this.gmailCredentials));
+            this.logMessage('✓ Credenciales de Gmail guardadas exitosamente');
+            
+            // Mostrar mensaje de confirmación
+            this.showSuccessMessage('Los cambios han sido guardados exitosamente');
+            
+            // Cerrar modal
+            this.hideSettingsModal();
+            
+            // Actualizar UI
+            this.updateUI();
+            
+        } catch (error) {
+            console.error('Error al guardar credenciales:', error);
+            this.showError('Error al guardar las credenciales');
+        }
+    }
+
+    showSuccessMessage(message) {
+        // Crear notificación de éxito
+        const notification = document.createElement('div');
+        notification.className = 'success-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        // Agregar al body
+        document.body.appendChild(notification);
+        
+        // Mostrar con animación
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Remover después de 3 segundos
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    getGmailCredentials() {
+        if (!this.gmailCredentials) {
+            this.showError('Por favor configura las credenciales de Gmail primero');
+            return null;
+        }
+        return this.gmailCredentials;
     }
 }
 
-// Initialize the application
+// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    new EmailSender();
+    window.emailSender = new EmailSender();
 });
