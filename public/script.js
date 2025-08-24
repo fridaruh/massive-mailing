@@ -96,10 +96,6 @@ class EmailSender {
         this.clearLog.addEventListener('click', () => this.clearLogContent());
         
         // Modal events
-        this.helpLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showHelpModal();
-        });
         this.closeHelp.addEventListener('click', () => this.hideHelpModal());
         this.helpModal.addEventListener('click', (e) => {
             if (e.target === this.helpModal) this.hideHelpModal();
