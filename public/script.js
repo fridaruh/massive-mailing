@@ -24,12 +24,6 @@ class EmailSender {
         // File upload elements
         this.templateUpload = document.getElementById('templateUpload');
         this.templateFile = document.getElementById('templateFile');
-            if (uploadArea && fileInput) {
-                uploadArea.addEventListener('click', () => fileInput.click());
-                uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
-                uploadArea.addEventListener('drop', (e) => this.handleDrop(e, fileInput, handler));
-                fileInput.addEventListener('change', handler);
-            }
         this.csvUpload = document.getElementById('csvUpload');
         this.csvFile = document.getElementById('csvFile');
         this.csvPreview = document.getElementById('csvPreview');
