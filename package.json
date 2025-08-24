@@ -4,6 +4,8 @@
   "description": "## Descripción Esta herramienta permite enviar correos electrónicos masivos de manera controlada y profesional, especialmente diseñada para campañas de marketing. Incluye características como envío por lotes, delays entre envíos y manejo de errores.",
   "main": "email-sender.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

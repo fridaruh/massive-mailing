@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masive Mailing - Envío Masivo de Correos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Masive Mailing</span>
+                </div>
+                <div class="header-status">
+                    <div class="status-indicator" id="statusIndicator">
+                        <div class="status-dot"></div>
+                        <span id="statusText">Listo</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Configuration Section -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2>Configuración</h2>
+                        <p>Configura los parámetros de envío y credenciales</p>
+                    </div>
+                    
+                    <div class="cards-grid">
+                        <!-- Email Configuration -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Credenciales de Gmail</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-group">
+                                    <label for="emailUser">Correo electrónico</label>
+                                    <input type="email" id="emailUser" placeholder="tu-email@gmail.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="appPassword">Clave de aplicación</label>
+                                    <input type="password" id="appPassword" placeholder="Clave de aplicación de Gmail">
+                                </div>
+                                <div class="help-text">
+                                    <a href="#" id="helpLink">¿Cómo obtener una clave de aplicación?</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Send Configuration -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Configuración de Envío</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-group">
+                                    <label for="batchSize">Correos por lote</label>
+                                    <input type="number" id="batchSize" value="50" min="1" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="delayEmails">Delay entre correos (segundos)</label>
+                                    <input type="number" id="delayEmails" value="10" min="1" max="60">
+                                </div>
+                                <div class="form-group">
+                                    <label for="delayBatches">Delay entre lotes (minutos)</label>
+                                    <input type="number" id="delayBatches" value="1" min="1" max="10">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Email Content Section -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2>Contenido del Correo</h2>
+                        <p>Define el asunto y carga la plantilla HTML</p>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label for="emailSubject">Asunto del correo</label>
+                                <input type="text" id="emailSubject" placeholder="Escribe el asunto del correo" value="🚀 Recap: Sesión 3 'Build in Public on Base'">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="htmlTemplate">Plantilla HTML</label>
+                                <div class="file-upload-area" id="templateUpload">
+                                    <div class="upload-content">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p>Arrastra tu plantilla HTML aquí o <span class="upload-link">selecciona un archivo</span></p>
+                                        <p class="upload-hint">Archivos HTML únicamente</p>
+                                    </div>
+                                    <input type="file" id="templateFile" accept=".html" hidden>
+                                </div>
+                                <div class="template-preview" id="templatePreview" style="display: none;">
+                                    <div class="preview-header">
+                                        <span id="templateName"></span>
+                                        <button class="btn-remove" id="removeTemplate">×</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recipients Section -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2>Destinatarios</h2>
+                        <p>Carga la lista de destinatarios desde un archivo CSV</p>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label>Lista de destinatarios (CSV)</label>
+                                <div class="file-upload-area" id="csvUpload">
+                                    <div class="upload-content">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p>Arrastra tu archivo CSV aquí o <span class="upload-link">selecciona un archivo</span></p>
+                                        <p class="upload-hint">El archivo debe contener una columna "email"</p>
+                                    </div>
+                                    <input type="file" id="csvFile" accept=".csv" hidden>
+                                </div>
+                                <div class="csv-preview" id="csvPreview" style="display: none;">
+                                    <div class="preview-header">
+                                        <span id="csvName"></span>
+                                        <span class="email-count" id="emailCount"></span>
+                                        <button class="btn-remove" id="removeCsv">×</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Send Section -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2>Envío</h2>
+                        <p>Inicia el proceso de envío masivo</p>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="send-summary" id="sendSummary">
+                                <div class="summary-item">
+                                    <span class="summary-label">Destinatarios:</span>
+                                    <span class="summary-value" id="totalRecipients">0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Lotes estimados:</span>
+                                    <span class="summary-value" id="estimatedBatches">0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Tiempo estimado:</span>
+                                    <span class="summary-value" id="estimatedTime">0 min</span>
+                                </div>
+                            </div>
+                            
+                            <div class="send-controls">
+                                <button class="btn-primary" id="startSending" disabled>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <polygon points="5,3 19,12 5,21 5,3" fill="currentColor"/>
+                                    </svg>
+                                    Iniciar Envío
+                                </button>
+                                <button class="btn-secondary" id="stopSending" style="display: none;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
+                                        <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
+                                    </svg>
+                                    Detener
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Progress Section -->
+                <section class="section" id="progressSection" style="display: none;">
+                    <div class="section-header">
+                        <h2>Progreso del Envío</h2>
+                        <p>Monitoreo en tiempo real del proceso</p>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="progress-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="sentCount">0</div>
+                                    <div class="stat-label">Enviados</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="errorCount">0</div>
+                                    <div class="stat-label">Errores</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="remainingCount">0</div>
+                                    <div class="stat-label">Restantes</div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span id="progressPercent">0%</span>
+                                    <span id="progressStatus">Preparando...</span>
+                                </div>
+                            </div>
+                            
+                            <div class="log-container">
+                                <div class="log-header">
+                                    <h4>Registro de actividad</h4>
+                                    <button class="btn-clear" id="clearLog">Limpiar</button>
+                                </div>
+                                <div class="log-content" id="logContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Help Modal -->
+        <div class="modal-overlay" id="helpModal" style="display: none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>¿Cómo obtener una clave de aplicación de Gmail?</h3>
+                    <button class="modal-close" id="closeHelp">×</button>
+                </div>
+                <div class="modal-content">
+                    <ol>
+                        <li>Ve a tu <strong>Cuenta de Google</strong></li>
+                        <li>Navega a <strong>Seguridad</strong></li>
+                        <li>Activa la <strong>Verificación en dos pasos</strong> si no la tienes</li>
+                        <li>Ve a <strong>Contraseñas de aplicación</strong></li>
+                        <li>Selecciona <strong>Correo</strong> como aplicación</li>
+                        <li>Copia la clave generada y úsala aquí</li>
+                    </ol>
+                    <div class="modal-note">
+                        <strong>Importante:</strong> Nunca uses tu contraseña normal de Gmail. Siempre usa una clave de aplicación específica.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
