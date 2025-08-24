@@ -145,8 +145,11 @@ class EmailSender {
                 element.addEventListener('click', handler);
             }
         });
+    }
     setupDragAndDrop(uploadArea, fileInput) {
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        }
+        )
         const settingsElements = [
             { id: 'settingsButton', handler: this.toggleSettingsDropdown.bind(this) },
             { id: 'gmailCredentialsOption', handler: () => this.openSettingsModal('gmail') },
@@ -158,6 +161,9 @@ class EmailSender {
             const element = document.getElementById(id);
             if (element) {
                 element.addEventListener('click', handler);
+            }
+        }
+        )
         ['dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
         });
@@ -174,6 +180,7 @@ class EmailSender {
         uploadArea.addEventListener('drop', (e) => {
             const files = e.dataTransfer.files;
             if (files.length > 0) {
+            }
             if (settingsMenu && dropdown && !settingsMenu.contains(e.target)) {
                 fileInput.dispatchEvent(new Event('change'));
             }
@@ -573,6 +580,9 @@ class EmailSender {
             if (element) {
                 element.addEventListener('input', this.updateSendSummary.bind(this));
             }
+        }
+        )
+    }
 }
 
 // Initialize the application
