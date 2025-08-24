@@ -24,10 +24,12 @@ class EmailSender {
         // File upload elements
         this.templateUpload = document.getElementById('templateUpload');
         this.templateFile = document.getElementById('templateFile');
-        this.templatePreview = document.getElementById('templatePreview');
-        this.templateName = document.getElementById('templateName');
-        this.removeTemplate = document.getElementById('removeTemplate');
-        
+            if (uploadArea && fileInput) {
+                uploadArea.addEventListener('click', () => fileInput.click());
+                uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
+                uploadArea.addEventListener('drop', (e) => this.handleDrop(e, fileInput, handler));
+                fileInput.addEventListener('change', handler);
+            }
         this.csvUpload = document.getElementById('csvUpload');
         this.csvFile = document.getElementById('csvFile');
         this.csvPreview = document.getElementById('csvPreview');
@@ -129,28 +131,50 @@ class EmailSender {
         });
         
         // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            this.hideSettingsDropdown();
+        const buttons = [
+            { id: 'startSending', handler: this.startSending.bind(this) },
+            { id: 'stopSending', handler: this.stopSending.bind(this) },
+            { id: 'clearLog', handler: this.clearLog.bind(this) },
+            { id: 'removeTemplate', handler: this.removeTemplate.bind(this) },
+            { id: 'removeCsv', handler: this.removeCsv.bind(this) }
+        ];
+
+        buttons.forEach(({ id, handler }) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', handler);
+            }
         });
-    }
-    
     setupDragAndDrop(uploadArea, fileInput) {
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, this.preventDefaults, false);
-        });
-        
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
-        });
-        
+        const settingsElements = [
+            { id: 'settingsButton', handler: this.toggleSettingsDropdown.bind(this) },
+            { id: 'gmailCredentialsOption', handler: () => this.openSettingsModal('gmail') },
+            { id: 'sendConfigOption', handler: () => this.openSettingsModal('sendConfig') },
+            { id: 'closeSettings', handler: this.closeSettingsModal.bind(this) }
+        ];
+
+        settingsElements.forEach(({ id, handler }) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', handler);
         ['dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
         });
+        const settingsModal = document.getElementById('settingsModal');
+        if (settingsModal) {
+            settingsModal.addEventListener('click', (e) => {
+                if (e.target.id === 'settingsModal') {
+                    this.closeSettingsModal();
+                }
+            });
+        }
+
         
         uploadArea.addEventListener('drop', (e) => {
             const files = e.dataTransfer.files;
             if (files.length > 0) {
-                fileInput.files = files;
+            if (settingsMenu && dropdown && !settingsMenu.contains(e.target)) {
                 fileInput.dispatchEvent(new Event('change'));
             }
         });
@@ -544,8 +568,11 @@ class EmailSender {
     }
     
     delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+        ['emailSubject'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', this.updateSendSummary.bind(this));
+            }
 }
 
 // Initialize the application
