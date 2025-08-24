@@ -73,6 +73,7 @@ body {
 .header-status {
     display: flex;
     align-items: center;
+    gap: 16px;
 }
 
 .status-indicator {
@@ -96,6 +97,82 @@ body {
 .status-indicator.sending .status-dot {
     background-color: #ff9500;
     animation: pulse 2s infinite;
+}
+
+/* Settings Menu */
+.settings-menu {
+    position: relative;
+}
+
+.settings-button {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #86868b;
+    transition: all 0.2s ease;
+}
+
+.settings-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
+}
+
+.settings-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.settings-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.dropdown-item svg {
+    color: #86868b;
+}
+
+.dropdown-item span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d1d1f;
 }
 
 .status-indicator.error .status-dot {
@@ -547,6 +624,11 @@ input[type="number"]:focus {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
+.settings-modal {
+    max-width: 600px;
+    width: 95%;
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -602,6 +684,15 @@ input[type="number"]:focus {
     border-left: 3px solid #ff9500;
     font-size: 14px;
     line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive design */

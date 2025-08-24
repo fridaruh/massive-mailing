@@ -63,6 +63,16 @@ class EmailSender {
         this.helpModal = document.getElementById('helpModal');
         this.helpLink = document.getElementById('helpLink');
         this.closeHelp = document.getElementById('closeHelp');
+        
+        // Settings elements
+        this.settingsButton = document.getElementById('settingsButton');
+        this.settingsDropdown = document.getElementById('settingsDropdown');
+        this.gmailCredentialsOption = document.getElementById('gmailCredentialsOption');
+        this.sendConfigOption = document.getElementById('sendConfigOption');
+        this.settingsModal = document.getElementById('settingsModal');
+        this.settingsModalTitle = document.getElementById('settingsModalTitle');
+        this.settingsModalContent = document.getElementById('settingsModalContent');
+        this.closeSettings = document.getElementById('closeSettings');
     }
     
     bindEvents() {
@@ -97,6 +107,30 @@ class EmailSender {
         this.closeHelp.addEventListener('click', () => this.hideHelpModal());
         this.helpModal.addEventListener('click', (e) => {
             if (e.target === this.helpModal) this.hideHelpModal();
+        });
+        
+        // Settings events
+        this.settingsButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleSettingsDropdown();
+        });
+        
+        this.gmailCredentialsOption.addEventListener('click', () => {
+            this.showGmailCredentialsModal();
+        });
+        
+        this.sendConfigOption.addEventListener('click', () => {
+            this.showSendConfigModal();
+        });
+        
+        this.closeSettings.addEventListener('click', () => this.hideSettingsModal());
+        this.settingsModal.addEventListener('click', (e) => {
+            if (e.target === this.settingsModal) this.hideSettingsModal();
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            this.hideSettingsDropdown();
         });
     }
     
@@ -415,6 +449,98 @@ class EmailSender {
     
     hideHelpModal() {
         this.helpModal.style.display = 'none';
+    }
+    
+    toggleSettingsDropdown() {
+        this.settingsDropdown.classList.toggle('show');
+    }
+    
+    hideSettingsDropdown() {
+        this.settingsDropdown.classList.remove('show');
+    }
+    
+    showGmailCredentialsModal() {
+        this.hideSettingsDropdown();
+        this.settingsModalTitle.textContent = 'Credenciales de Gmail';
+        this.settingsModalContent.innerHTML = `
+            <div class="form-group">
+                <label for="modalEmailUser">Correo electrónico</label>
+                <input type="email" id="modalEmailUser" placeholder="tu-email@gmail.com" value="${this.emailUser.value}">
+            </div>
+            <div class="form-group">
+                <label for="modalAppPassword">Clave de aplicación</label>
+                <input type="password" id="modalAppPassword" placeholder="Clave de aplicación de Gmail" value="${this.appPassword.value}">
+            </div>
+            <div class="help-text">
+                <a href="#" id="modalHelpLink">¿Cómo obtener una clave de aplicación?</a>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelGmailSettings">Cancelar</button>
+                <button class="btn-primary" id="saveGmailSettings">Guardar</button>
+            </div>
+        `;
+        
+        // Bind events for modal form
+        document.getElementById('modalHelpLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.hideSettingsModal();
+            this.showHelpModal();
+        });
+        
+        document.getElementById('cancelGmailSettings').addEventListener('click', () => {
+            this.hideSettingsModal();
+        });
+        
+        document.getElementById('saveGmailSettings').addEventListener('click', () => {
+            this.emailUser.value = document.getElementById('modalEmailUser').value;
+            this.appPassword.value = document.getElementById('modalAppPassword').value;
+            this.hideSettingsModal();
+            this.updateUI();
+        });
+        
+        this.settingsModal.style.display = 'flex';
+    }
+    
+    showSendConfigModal() {
+        this.hideSettingsDropdown();
+        this.settingsModalTitle.textContent = 'Configuración de Envío';
+        this.settingsModalContent.innerHTML = `
+            <div class="form-group">
+                <label for="modalBatchSize">Correos por lote</label>
+                <input type="number" id="modalBatchSize" value="${this.batchSize.value}" min="1" max="100">
+            </div>
+            <div class="form-group">
+                <label for="modalDelayEmails">Delay entre correos (segundos)</label>
+                <input type="number" id="modalDelayEmails" value="${this.delayEmails.value}" min="1" max="60">
+            </div>
+            <div class="form-group">
+                <label for="modalDelayBatches">Delay entre lotes (minutos)</label>
+                <input type="number" id="modalDelayBatches" value="${this.delayBatches.value}" min="1" max="10">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelSendSettings">Cancelar</button>
+                <button class="btn-primary" id="saveSendSettings">Guardar</button>
+            </div>
+        `;
+        
+        // Bind events for modal form
+        document.getElementById('cancelSendSettings').addEventListener('click', () => {
+            this.hideSettingsModal();
+        });
+        
+        document.getElementById('saveSendSettings').addEventListener('click', () => {
+            this.batchSize.value = document.getElementById('modalBatchSize').value;
+            this.delayEmails.value = document.getElementById('modalDelayEmails').value;
+            this.delayBatches.value = document.getElementById('modalDelayBatches').value;
+            this.hideSettingsModal();
+            this.updateEstimates();
+        });
+        
+        this.settingsModal.style.display = 'flex';
+    }
+    
+    hideSettingsModal() {
+        this.settingsModal.style.display = 'none';
     }
     
     delay(ms) {

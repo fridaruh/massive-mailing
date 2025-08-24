@@ -28,6 +28,30 @@
                         <div class="status-dot"></div>
                         <span id="statusText">Listo</span>
                     </div>
+                    <div class="settings-menu">
+                        <button class="settings-button" id="settingsButton">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m17-4a4 4 0 01-8 0 4 4 0 018 0zM7 16a4 4 0 01-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        <div class="settings-dropdown" id="settingsDropdown">
+                            <div class="dropdown-item" id="gmailCredentialsOption">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2"/>
+                                    <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span>Credenciales de Gmail</span>
+                            </div>
+                            <div class="dropdown-item" id="sendConfigOption">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span>Configuración de Envío</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -35,57 +59,6 @@
         <!-- Main Content -->
         <main class="main">
             <div class="container">
-                <!-- Configuration Section -->
-                <section class="section">
-                    <div class="section-header">
-                        <h2>Configuración</h2>
-                        <p>Configura los parámetros de envío y credenciales</p>
-                    </div>
-                    
-                    <div class="cards-grid">
-                        <!-- Email Configuration -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Credenciales de Gmail</h3>
-                            </div>
-                            <div class="card-content">
-                                <div class="form-group">
-                                    <label for="emailUser">Correo electrónico</label>
-                                    <input type="email" id="emailUser" placeholder="tu-email@gmail.com">
-                                </div>
-                                <div class="form-group">
-                                    <label for="appPassword">Clave de aplicación</label>
-                                    <input type="password" id="appPassword" placeholder="Clave de aplicación de Gmail">
-                                </div>
-                                <div class="help-text">
-                                    <a href="#" id="helpLink">¿Cómo obtener una clave de aplicación?</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Send Configuration -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Configuración de Envío</h3>
-                            </div>
-                            <div class="card-content">
-                                <div class="form-group">
-                                    <label for="batchSize">Correos por lote</label>
-                                    <input type="number" id="batchSize" value="50" min="1" max="100">
-                                </div>
-                                <div class="form-group">
-                                    <label for="delayEmails">Delay entre correos (segundos)</label>
-                                    <input type="number" id="delayEmails" value="10" min="1" max="60">
-                                </div>
-                                <div class="form-group">
-                                    <label for="delayBatches">Delay entre lotes (minutos)</label>
-                                    <input type="number" id="delayBatches" value="1" min="1" max="10">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 <!-- Email Content Section -->
                 <section class="section">
                     <div class="section-header">
@@ -250,6 +223,19 @@
                 </section>
             </div>
         </main>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settingsModal" style="display: none;">
+            <div class="modal settings-modal">
+                <div class="modal-header">
+                    <h3 id="settingsModalTitle">Configuración</h3>
+                    <button class="modal-close" id="closeSettings">×</button>
+                </div>
+                <div class="modal-content" id="settingsModalContent">
+                    <!-- Content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
 
         <!-- Help Modal -->
         <div class="modal-overlay" id="helpModal" style="display: none;">
